@@ -48,7 +48,41 @@ void MainComponent::render()
 {
     OpenGLHelpers::clear (Colours::black);
 
-    auto& shader = chl::PathShaderProgram::select (openGLContext);
+    const auto& e = openGLContext.extensions;
+    
+    const auto bounds = getLocalBounds().toFloat();
+    const auto& shader = chl::PathShaderProgram::select (openGLContext);
+    shader.params.set (bounds.getWidth(), bounds.getHeight());
+
+    const auto scale = AffineTransform::scale (0.5f,
+                                               0.5f,
+                                               bounds.getCentreX(),
+                                               bounds.getCentreY());
+    const auto quad = bounds.transformedBy (scale).toNearestInt();
+
+    const std::vector<GLshort> vertices
+    {
+        GLshort (quad.getTopLeft().x), GLshort (quad.getTopLeft().y),
+        GLshort (quad.getTopRight().x), GLshort (quad.getTopRight().y),
+        GLshort (quad.getBottomLeft().x), GLshort (quad.getBottomLeft().y),
+        GLshort (quad.getBottomRight().x), GLshort (quad.getBottomRight().y)
+    };
+    
+    GLuint vertexBuffer = 0;
+    e.glGenBuffers (1, &vertexBuffer);
+    e.glBindBuffer (GL_ARRAY_BUFFER, vertexBuffer);
+    e.glBufferData (GL_ARRAY_BUFFER, sizeof (GLshort) * vertices.size(), vertices.data(), GL_STATIC_DRAW);
+    
+    auto index = (GLuint) shader.params.position.attributeID;
+    e.glVertexAttribPointer (index, 2, GL_SHORT, GL_FALSE, 4, nullptr);
+    e.glEnableVertexAttribArray (index);
+    
+    glDrawArrays (GL_TRIANGLE_STRIP, 0, GLsizei (vertices.size() / 2));
+        
+    e.glBindBuffer (GL_ARRAY_BUFFER, 0);
+    e.glUseProgram (0);
+    e.glDisableVertexAttribArray (index);
+    e.glDeleteBuffers (1, &vertexBuffer);
 }
 
 void MainComponent::paint (Graphics& g)
