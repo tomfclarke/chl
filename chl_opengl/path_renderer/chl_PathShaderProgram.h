@@ -1,5 +1,5 @@
 /**
- *  chl_opengl.cpp
+ *  chl_PathShaderProgram.h
  *
  *  MIT License
  *
@@ -24,6 +24,36 @@
  *  SOFTWARE.
  */
 
-#include "chl_opengl.h"
+#pragma once
 
-#include "path_renderer/chl_PathShaderProgram.cpp"
+namespace chl
+{
+struct PathShaderProgram : public juce::ReferenceCountedObject
+{
+    PathShaderProgram (juce::OpenGLContext& context);
+    
+    static const PathShaderProgram& select (juce::OpenGLContext& context);
+    
+    struct Builder
+    {
+        Builder (juce::OpenGLShaderProgram& program);
+    };
+    
+    struct Params
+    {
+        Params (juce::OpenGLShaderProgram& program);
+
+        void set (const float targetWidth, const float targetHeight) const
+        {
+            targetSize.set (targetWidth, targetHeight);
+        }
+        
+        juce::OpenGLShaderProgram::Attribute position;
+        juce::OpenGLShaderProgram::Uniform targetSize;
+    };
+    
+    juce::OpenGLShaderProgram program;
+    Builder builder;
+    Params params;
+};
+}

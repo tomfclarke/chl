@@ -47,3 +47,7 @@
 *******************************************************************************/
 
 #pragma once
+
+#include <juce_opengl/juce_opengl.h>
+
+#include "path_renderer/chl_PathShaderProgram.h"
