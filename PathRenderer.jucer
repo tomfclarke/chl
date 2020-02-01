@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
 <JUCERPROJECT id="Nl9p2r" name="PathRenderer" projectType="guiapp" jucerVersion="5.4.5"
-              cppLanguageStandard="17">
+              cppLanguageStandard="17" version="0.0.1" companyName="chl" bundleIdentifier="com.chl.PathRenderer">
   <MAINGROUP id="YdZHzJ" name="PathRenderer">
     <GROUP id="{C6795244-F378-179B-4111-40101CC5F6F1}" name="Source">
       <FILE id="I9DSFR" name="MainComponent.h" compile="0" resource="0" file="Source/MainComponent.h"/>
@@ -24,10 +24,12 @@
         <MODULEPATH id="juce_gui_basics" path="../../JUCE/modules"/>
         <MODULEPATH id="juce_gui_extra" path="../../JUCE/modules"/>
         <MODULEPATH id="juce_opengl" path="../../JUCE/modules"/>
+        <MODULEPATH id="chl_opengl" path="."/>
       </MODULEPATHS>
     </XCODE_MAC>
   </EXPORTFORMATS>
   <MODULES>
+    <MODULE id="chl_opengl" showAllCode="1" useLocalCopy="0" useGlobalPath="0"/>
     <MODULE id="juce_core" showAllCode="1" useLocalCopy="0" useGlobalPath="1"/>
     <MODULE id="juce_data_structures" showAllCode="1" useLocalCopy="0" useGlobalPath="1"/>
     <MODULE id="juce_events" showAllCode="1" useLocalCopy="0" useGlobalPath="1"/>
