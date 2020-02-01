@@ -1,5 +1,5 @@
 /**
- *  chl_opengl.cpp
+ *  chl_VertexGenerator.h
  *
  *  MIT License
  *
@@ -24,7 +24,12 @@
  *  SOFTWARE.
  */
 
-#include "chl_opengl.h"
+#pragma once
 
-#include "path_renderer/chl_PathShaderProgram.cpp"
-#include "path_renderer/chl_VertexGenerator.cpp"
+namespace chl
+{
+struct VertexGenerator
+{
+    static std::vector<GLshort> fromPath (const juce::Path& path);
+};
+}

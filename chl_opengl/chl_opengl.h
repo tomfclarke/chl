@@ -51,3 +51,4 @@
 #include <juce_opengl/juce_opengl.h>
 
 #include "path_renderer/chl_PathShaderProgram.h"
+#include "path_renderer/chl_VertexGenerator.h"

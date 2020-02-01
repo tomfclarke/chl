@@ -62,7 +62,7 @@ PathShaderProgram::Builder::Builder (juce::OpenGLShaderProgram& program)
     program.addFragmentShader (juce::OpenGLHelpers::translateFragmentShaderToV3 (
         "void main()"
         "{"
-        "gl_FragColor = vec4 (1.0);"
+        "gl_FragColor = vec4 (1.0, 1.0, 1.0, 0.2);"
         "}"));
     
     program.link();

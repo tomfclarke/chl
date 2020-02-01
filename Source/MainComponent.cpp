@@ -60,13 +60,9 @@ void MainComponent::render()
                                                bounds.getCentreY());
     const auto quad = bounds.transformedBy (scale).toNearestInt();
 
-    const std::vector<GLshort> vertices
-    {
-        GLshort (quad.getTopLeft().x), GLshort (quad.getTopLeft().y),
-        GLshort (quad.getTopRight().x), GLshort (quad.getTopRight().y),
-        GLshort (quad.getBottomLeft().x), GLshort (quad.getBottomLeft().y),
-        GLshort (quad.getBottomRight().x), GLshort (quad.getBottomRight().y)
-    };
+    Path p;
+    p.addRectangle (quad);
+    const auto vertices { chl::VertexGenerator::fromPath (p) };
     
     GLuint vertexBuffer = 0;
     e.glGenBuffers (1, &vertexBuffer);
@@ -76,8 +72,11 @@ void MainComponent::render()
     auto index = (GLuint) shader.params.position.attributeID;
     e.glVertexAttribPointer (index, 2, GL_SHORT, GL_FALSE, 4, nullptr);
     e.glEnableVertexAttribArray (index);
+
+    glBlendFunc (GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
+    glEnable (GL_BLEND);
     
-    glDrawArrays (GL_TRIANGLE_STRIP, 0, GLsizei (vertices.size() / 2));
+    glDrawArrays (GL_TRIANGLES, 0, GLsizei (vertices.size() / 2));
         
     e.glBindBuffer (GL_ARRAY_BUFFER, 0);
     e.glUseProgram (0);
