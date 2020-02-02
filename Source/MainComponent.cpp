@@ -54,15 +54,7 @@ void MainComponent::render()
     const auto& shader = chl::PathShaderProgram::select (openGLContext);
     shader.params.set (bounds.getWidth(), bounds.getHeight());
 
-    const auto scale = AffineTransform::scale (0.5f,
-                                               0.5f,
-                                               bounds.getCentreX(),
-                                               bounds.getCentreY());
-    const auto quad = bounds.transformedBy (scale).toNearestInt();
-
-    Path p;
-    p.addRectangle (quad);
-    const auto vertices { chl::VertexGenerator::fromPath (p) };
+    const auto vertices { chl::VertexGenerator::fromPath (path) };
     
     GLuint vertexBuffer = 0;
     e.glGenBuffers (1, &vertexBuffer);
@@ -86,8 +78,21 @@ void MainComponent::render()
 
 void MainComponent::paint (Graphics& g)
 {
+    g.setColour (Colours::orangered);
+    g.strokePath(path, PathStrokeType (1.f));
 }
 
 void MainComponent::resized()
 {
+    GlyphArrangement glyphs;
+    glyphs.addFittedText (Font (float (getHeight())),
+                          "e",
+                          0.f,
+                          0.f,
+                          float (getWidth()),
+                          float (getHeight()),
+                          Justification::centred,
+                          1);
+    path.clear();
+    glyphs.createPath (path);
 }
