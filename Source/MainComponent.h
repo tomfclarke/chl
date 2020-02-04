@@ -3,7 +3,7 @@
  *
  *  MIT License
  *
- *  Copyright (c) 2018, Tom Clarke
+ *  Copyright (c) 2020, Tom Clarke
  *
  *  Permission is hereby granted, free of charge, to any person obtaining a copy
  *  of this software and associated documentation files (the "Software"), to deal
@@ -42,7 +42,24 @@ public:
     void resized() override;
 
 private:
+    void renderToWindingFrameBuffer();
+    void renderToMainFrameBuffer();
+    void setAdditiveBlending();
+    void setAlphaBlending();
+    void updateVertexData();
+
+    const OpenGLExtensionFunctions& e = openGLContext.extensions;
+
     Path path;
+
+    std::vector<GLshort> vertices;
+    std::mutex verticesMutex;
+
+    std::atomic<bool> boundsHaveChanged { false };
+    OpenGLFrameBuffer windingFrameBuffer;
+
+    GLuint vertexBuffer { 0 };
+    GLuint screenBuffer { 0 };
 
     JUCE_DECLARE_NON_COPYABLE_WITH_LEAK_DETECTOR (MainComponent)
 };

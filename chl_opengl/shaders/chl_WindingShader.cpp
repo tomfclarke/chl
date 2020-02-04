@@ -1,9 +1,9 @@
 /**
- *  chl_PathShaderProgram.cpp
+ *  chl_WindingShader.cpp
  *
  *  MIT License
  *
- *  Copyright (c) 2018, Tom Clarke
+ *  Copyright (c) 2020, Tom Clarke
  *
  *  Permission is hereby granted, free of charge, to any person obtaining a copy
  *  of this software and associated documentation files (the "Software"), to deal
@@ -26,29 +26,19 @@
 
 namespace chl
 {
-PathShaderProgram::PathShaderProgram (juce::OpenGLContext& context)
+WindingShader::WindingShader (juce::OpenGLContext& context)
     : program (context)
     , builder (program)
     , params (program)
 {
 }
-    
-const PathShaderProgram& PathShaderProgram::select (juce::OpenGLContext& context)
+
+const WindingShader& WindingShader::select (juce::OpenGLContext& context)
 {
-    constexpr auto id = "chlPathShader";
-    PathShaderProgram* program = static_cast<PathShaderProgram*> (context.getAssociatedObject (id));
-    
-    if (program == nullptr)
-    {
-        program = new PathShaderProgram (context);
-        context.setAssociatedObject (id, program);
-    }
-    
-    program->program.use();
-    return *program;
+    return ::chl::select<WindingShader>(context, "chlWindingShader");
 }
-    
-PathShaderProgram::Builder::Builder (juce::OpenGLShaderProgram& program)
+
+WindingShader::Builder::Builder (juce::OpenGLShaderProgram& program)
 {
     program.addVertexShader (juce::OpenGLHelpers::translateVertexShaderToV3 (
         "attribute " JUCE_HIGHP " vec2 position;"
@@ -56,19 +46,19 @@ PathShaderProgram::Builder::Builder (juce::OpenGLShaderProgram& program)
         "void main()"
         "{"
         JUCE_HIGHP " vec2 scaled = position / (0.5 * targetSize.xy);"
-        "gl_Position = vec4 (scaled.x - 1.0, 1.0 - scaled.y, 0, 1.0);"
+        "gl_Position = vec4 (scaled.x - 1.0, scaled.y - 1.0, 0, 1.0);"
         "}"));
     
     program.addFragmentShader (juce::OpenGLHelpers::translateFragmentShaderToV3 (
         "void main()"
         "{"
-        "gl_FragColor = vec4 (1.0, 1.0, 1.0, 0.2);"
+        "gl_FragColor = vec4 (1.0) * (gl_FrontFacing ? 16.0 / 255.0 : 1.0 / 255.0);"
         "}"));
     
     program.link();
 }
-    
-PathShaderProgram::Params::Params (juce::OpenGLShaderProgram& program)
+
+WindingShader::Params::Params (juce::OpenGLShaderProgram& program)
     : position (program, "position")
     , targetSize (program, "targetSize")
 {

@@ -1,5 +1,5 @@
 /**
- *  chl_opengl.cpp
+ *  chl_ShaderUtils.h
  *
  *  MIT License
  *
@@ -24,9 +24,22 @@
  *  SOFTWARE.
  */
 
-#include "chl_opengl.h"
+#pragma once
 
-#include "shaders/chl_WindingShader.cpp"
-#include "shaders/chl_FillShader.cpp"
-#include "path_renderer/chl_PathShaderProgram.cpp"
-#include "path_renderer/chl_VertexGenerator.cpp"
+namespace chl
+{
+template<typename ShaderType>
+const ShaderType& select (juce::OpenGLContext& context, juce::StringRef uniqueName)
+{
+    ShaderType* program = static_cast<ShaderType*> (context.getAssociatedObject (uniqueName));
+
+    if (program == nullptr)
+    {
+        program = new ShaderType (context);
+        context.setAssociatedObject (uniqueName, program);
+    }
+
+    program->program.use();
+    return *program;
+}
+}

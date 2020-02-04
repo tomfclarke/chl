@@ -1,9 +1,9 @@
 /**
- *  chl_VertexGenerator.h
+ *  chl_VertexGenerator.cpp
  *
  *  MIT License
  *
- *  Copyright (c) 2018, Tom Clarke
+ *  Copyright (c) 2020, Tom Clarke
  *
  *  Permission is hereby granted, free of charge, to any person obtaining a copy
  *  of this software and associated documentation files (the "Software"), to deal
@@ -24,12 +24,37 @@
  *  SOFTWARE.
  */
 
-#pragma once
-
 namespace chl
 {
-struct VertexGenerator
+size_t getNumPointsInPath (const juce::Path& path)
 {
-    static std::vector<GLshort> fromPath (const juce::Path& path);
-};
+    juce::PathFlatteningIterator i (path);
+    auto count = size_t (0);
+    
+    while (i.next())
+    {
+        count += 2;
+    }
+    return count;
+}
+
+std::vector<GLshort> VertexGenerator::fromPath (const juce::Path& path)
+{
+    juce::PathFlatteningIterator i (path);
+    std::vector<GLshort> vertices;
+    vertices.reserve (getNumPointsInPath (path));
+
+    // build up a container with vertices for triangles that
+    // start at 0,0 and join every two points in the path
+    while (i.next())
+    {
+        vertices.push_back (0);
+        vertices.push_back (0);
+        vertices.push_back (i.x1);
+        vertices.push_back (i.y1);
+        vertices.push_back (i.x2);
+        vertices.push_back (i.y2);
+    }
+    return vertices;
+}
 }

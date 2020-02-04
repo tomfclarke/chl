@@ -1,9 +1,9 @@
 /**
- *  chl_PathShaderProgram.h
+ *  chl_FillShader.h
  *
  *  MIT License
  *
- *  Copyright (c) 2018, Tom Clarke
+ *  Copyright (c) 2020, Tom Clarke
  *
  *  Permission is hereby granted, free of charge, to any person obtaining a copy
  *  of this software and associated documentation files (the "Software"), to deal
@@ -24,15 +24,23 @@
  *  SOFTWARE.
  */
 
-#pragma once
-
 namespace chl
 {
-struct PathShaderProgram : public juce::ReferenceCountedObject
+/**
+    Shader that takes a texture containing pixel values that are multiples of
+    1/255 and fills based on whether those values are odd.
+
+    If a pixel's colour value when scaled back up by 255 is odd, then the pixel
+    lies inside the outline of the polygon and can be filled during a second
+    pass with the fill shader.
+
+    @see WindingShader
+ */
+struct FillShader : public juce::ReferenceCountedObject
 {
-    PathShaderProgram (juce::OpenGLContext& context);
+    FillShader (juce::OpenGLContext& context);
     
-    static const PathShaderProgram& select (juce::OpenGLContext& context);
+    static const FillShader& select (juce::OpenGLContext& context);
     
     struct Builder
     {
@@ -42,14 +50,15 @@ struct PathShaderProgram : public juce::ReferenceCountedObject
     struct Params
     {
         Params (juce::OpenGLShaderProgram& program);
-
+        
         void set (const float targetWidth, const float targetHeight) const
         {
             targetSize.set (targetWidth, targetHeight);
+            windingTexture.set (0);
         }
         
         juce::OpenGLShaderProgram::Attribute position;
-        juce::OpenGLShaderProgram::Uniform targetSize;
+        juce::OpenGLShaderProgram::Uniform targetSize, windingTexture;
     };
     
     juce::OpenGLShaderProgram program;

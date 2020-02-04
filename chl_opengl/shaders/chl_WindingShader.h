@@ -1,5 +1,5 @@
 /**
- *  chl_opengl.cpp
+ *  chl_WindingShader.h
  *
  *  MIT License
  *
@@ -24,9 +24,45 @@
  *  SOFTWARE.
  */
 
-#include "chl_opengl.h"
-
-#include "shaders/chl_WindingShader.cpp"
-#include "shaders/chl_FillShader.cpp"
-#include "path_renderer/chl_PathShaderProgram.cpp"
-#include "path_renderer/chl_VertexGenerator.cpp"
+namespace chl
+{
+/**
+    Shader that writes colour values of 1/255 which, when used with additive
+    blending, accumulates to calculate the winding number of pixels inside a
+    polygon.
+ 
+    If a pixel's colour value scaled back up by 255 is odd, then the pixel lies
+    inside the outline of the polygon and can be filled during a second pass
+    with the fill shader.
+ 
+    @see FillShader
+*/
+struct WindingShader : public juce::ReferenceCountedObject
+{
+    WindingShader (juce::OpenGLContext& context);
+    
+    static const WindingShader& select (juce::OpenGLContext& context);
+    
+    struct Builder
+    {
+        Builder (juce::OpenGLShaderProgram& program);
+    };
+    
+    struct Params
+    {
+        Params (juce::OpenGLShaderProgram& program);
+        
+        void set (const float targetWidth, const float targetHeight) const
+        {
+            targetSize.set (targetWidth, targetHeight);
+        }
+        
+        juce::OpenGLShaderProgram::Attribute position;
+        juce::OpenGLShaderProgram::Uniform targetSize;
+    };
+    
+    juce::OpenGLShaderProgram program;
+    Builder builder;
+    Params params;
+};
+}
